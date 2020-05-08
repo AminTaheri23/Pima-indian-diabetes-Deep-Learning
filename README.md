@@ -1,5 +1,5 @@
 # Pima indian diabetes Deep Learning
-![Dibetes, credit https://www.samyzaf.com/ML/](https://www.samyzaf.com/ML/pima/pima2.png)
+![Dibetes](https://www.ampersandhealth.co.uk/wp-content/uploads/2018/11/Digital-Health-KD-01_WEB-674x450-2.jpg)
 Diabetes prediction with deep MLP models webapp (StreamLit.io) + [ipynb](https://github.com/AminTaheri23/Pima-indian-diabetes-Deep-Learning/blob/master/pima-diabetes-classification-deep-learning.ipynb)
 
 ## Data
