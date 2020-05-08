@@ -55,13 +55,13 @@ false positive (FP) : Healthy incorrectly identified as diabetic
 false negative (FN) : Diabetic incorrectly identified as healthy
 
 
-###Metrics :
+### Metrics :
 
-Accuracy : (TP +TN) / (TP + TN + FP +FN)
-Precision : TP / (TP + FP)
-Recall : TP / (TP + FN)
-F1 score : 2 x ((Precision x Recall) / (Precision + Recall))
-Roc Curve : The ROC curve is created by plotting the true positive rate (TPR) against the false positive rate (FPR) at various threshold settings.
+- Accuracy : (TP +TN) / (TP + TN + FP +FN)
+- Precision : TP / (TP + FP)
+- Recall : TP / (TP + FN)
+- F1 score : 2 x ((Precision x Recall) / (Precision + Recall))
+- Roc Curve : The ROC curve is created by plotting the true positive rate (TPR) against the false positive rate (FPR) at various threshold settings.
 
 
 Precision Recall Curve : shows the tradeoff between precision and recall for different threshold
