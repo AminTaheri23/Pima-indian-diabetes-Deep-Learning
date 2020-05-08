@@ -1,6 +1,6 @@
 # Pima indian diabetes Deep Learning
 <p align="center">
-   <img  width="460" height="300" src="https://www.ampersandhealth.co.uk/wp-content/uploads/2018/11/Digital-Health-KD-01_WEB-674x450-2.jpg">
+   <img  src="https://www.ampersandhealth.co.uk/wp-content/uploads/2018/11/Digital-Health-KD-01_WEB-674x450-2.jpg">
 </p>
 
 Diabetes prediction with deep MLP models webapp (StreamLit.io) + [ipynb](https://github.com/AminTaheri23/Pima-indian-diabetes-Deep-Learning/blob/master/pima-diabetes-classification-deep-learning.ipynb)
