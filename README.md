@@ -31,8 +31,8 @@ Can you build a machine learning model to accurately predict whether or not the 
 "The Pima (or Akimel O'odham, also spelled Akimel O'Otham, or "River People," formerly known as Pima) is a group of Native Americans living in an area consisting of what is now central and southern Arizona. The majority of the surviving two bands of Akimel O'odham are based on two reservations: the Keli Akimel O'Otham of the Gila River Indian Community (GRIC) and the On'k Akimel O'odham of the Salt River Pima-Maricopa Indian Community (SRPMIC). Wikipedia
 
 ## What is diabetes ?
-According to the NIH, "Diabetes is a disease that occurs when your blood glucose, also called blood sugar, is too high. Blood glucose is your main source of energy and comes from the food you eat. Insulin, a hormone made from the pancreas, helps glucose from food get into your cells to be used for energy. Sometimes your body doesn’t make enough—or any—insulin or doesn’t use insulin well. Glucose then stays in your blood and doesn’t reach your cells.
-Over time, having too much glucose in your blood can cause health problems. Although diabetes has no cure, you can take steps to manage your diabetes and stay healthy.
+According to the NIH, "Diabetes is a disease that occurs when your **blood glucose**, also called blood sugar, is **too high**. Blood **glucose** is your main source of energy and **comes from the food you eat**. **Insulin**, a hormone made from the pancreas, **helps glucose** from food get into your cells to be used for energy. Sometimes your body doesn’t make enough or any insulin or doesn’t use insulin well. Glucose then stays in your blood and doesn’t reach your cells.
+Over time, **having too much glucose in your blood** can cause health problems. Although diabetes has no cure, you can take steps to manage your diabetes and stay healthy.
 Sometimes people call diabetes “a touch of sugar” or “borderline diabetes.” These terms suggest that someone doesn’t really have diabetes or has a less serious case, but every case of diabetes is serious.
 What are the different types of diabetes? The most common types of diabetes are type 1, type 2, and gestational diabetes.
 
@@ -47,7 +47,7 @@ Other types of diabetes Less common types include monogenic diabetes, which is a
 To measure the performance of a model, we need several elements :
 
 
-*Confusion matrix* : also known as the error matrix, allows visualization of the performance of an algorithm :
+**Confusion matrix** : also known as the error matrix, allows visualization of the performance of an algorithm :
 
 - True Positive (TP): Diabetic, correctly identified as diabetic
 - True Negative (TN): Healthy, correctly identified as healthy
