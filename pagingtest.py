@@ -11,17 +11,6 @@ import warnings
 from sklearn.dummy import DummyClassifier
 from PIL import Image
 
-
-def get_f1(y_true, y_pred): #taken from old keras source code
-    true_positives = K.sum(K.round(K.clip(y_true * y_pred, 0, 1)))
-    possible_positives = K.sum(K.round(K.clip(y_true, 0, 1)))
-    predicted_positives = K.sum(K.round(K.clip(y_pred, 0, 1)))
-    precision = true_positives / (predicted_positives + K.epsilon())
-    recall = true_positives / (possible_positives + K.epsilon())
-    f1_val = 2*(precision*recall)/(precision+recall+K.epsilon())
-    return f1_val
-
-
 def norm_a_data(data):
     data[0] = (data[0] - 0)    / (17 - 0)
     data[1] = (data[1] - 0)    / (199 - 0)
@@ -136,15 +125,25 @@ if radio == "Home":
      \n """)
     st.write("\n")
     button = st.button("Predict")
+
+    import tensorflow.keras.backend as K
+
+    @st.cache(allow_output_mutation=True)
+    def load_it():
+        model = keras.models.load_model("model2")
+        model._make_predict_function()
+        return model
+
+    
     if button:
-        model = keras.models.load_model("model2",)# custom_objects={'get_f1': get_f1})
+        model = load_it()
         my_data = norm_a_data(patient)
         my_data=np.array(my_data)
         my_data = my_data.reshape(8,1)
         pred = model.predict(my_data.transpose())
         pred = float(pred)
         if pred >= 0.5 :
-            st.error("Unfortunately, we are **" + str("{:.2f}".format(pred*100)) + "%** sure that you have diabetes/")
+            st.error("Unfortunately, we are **" + str("{:.2f}".format(pred*100)) + "%** sure that you have diabetes")
         else:
             st.success(f"Hooray! we are **" + str("{:.2f}".format((1-pred)*100)) + "%** sure that you don't have diabetes")
             st.balloons()
