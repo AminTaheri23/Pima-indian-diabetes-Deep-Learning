@@ -1,0 +1,21 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+
+[packages]
+streamlit = "*"
+pandas = "*"
+numpy = "*"
+tensorflow  = "*" 
+matplotlib.pyplot  = "*"
+sklearn = "*"
+seaborn  = "*"
+warnings =  = "*"
+PIL = "*"
+joblib  = "*"
+
+[requires]
+python_version = "3.7"
