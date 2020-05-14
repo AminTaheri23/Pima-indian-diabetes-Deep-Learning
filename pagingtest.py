@@ -10,6 +10,7 @@ import seaborn as sns
 import warnings
 from sklearn.dummy import DummyClassifier
 from PIL import Image
+import joblib
 
 def norm_a_data(data):
     data[0] = (data[0] - 0)    / (17 - 0)
@@ -132,21 +133,51 @@ if radio == "Home":
     def load_it():
         model = keras.models.load_model("model2")
         model._make_predict_function()
-        return model
 
-    
-    if button:
-        model = load_it()
-        my_data = norm_a_data(patient)
-        my_data=np.array(my_data)
-        my_data = my_data.reshape(8,1)
-        pred = model.predict(my_data.transpose())
-        pred = float(pred)
+        lr_clf_file = 'lr_clf.sav'
+        lr_clf = joblib.load(lr_clf_file)
+
+        svm_clf_file = 'svm_clf.sav'
+        svm_clf = joblib.load(svm_clf_file)
+
+        gnb_clf_file = 'gnb_clf.sav'
+        gnb_clf = joblib.load(gnb_clf_file)
+
+        return model, lr_clf, svm_clf, gnb_clf
+
+    def pred_human_readable(pred):
         if pred >= 0.5 :
             st.error("Unfortunately, we are **" + str("{:.2f}".format(pred*100)) + "%** sure that you have diabetes")
         else:
             st.success(f"Hooray! we are **" + str("{:.2f}".format((1-pred)*100)) + "%** sure that you don't have diabetes")
             st.balloons()
+
+    if button:
+        model, lr_clf, svm_clf, gnb_clf = load_it()
+        my_data = norm_a_data(patient)
+        my_data=np.array(my_data)
+        my_data = my_data.reshape(8,1)
+
+        st.write("**Model 1 Results (Deep Learning):** \n")
+        pred = model.predict(my_data.transpose())
+        pred = float(pred)
+        pred_human_readable(pred)
+
+        st.write("**Model 2 Results (Logistic Regression):** \n")
+        pred = lr_clf.predict_proba(my_data.transpose())
+        pred = float(pred[0][1])
+        pred_human_readable(pred)
+
+        st.write("**Model 3 Results (Support Vector Machine):** \n")
+        pred = svm_clf.predict_proba(my_data.transpose())
+        pred = float(pred[0][1])
+        pred_human_readable(pred)
+
+        st.write("**Model 4 Results (Naive Bayes):** \n")
+        pred = gnb_clf.predict_proba(my_data.transpose())
+        pred = float(pred[0][1])
+        pred_human_readable(pred)
+        
 
 
     st.write("""
@@ -154,14 +185,14 @@ if radio == "Home":
 
     |Columns|Description|
     |-------|------------|
-    |Pregnancies|Number of times pregnant|
-    |Glucose|Plasma glucose concentration for 2 hours in an oral glucose tolerance test|
-    |BloodPressure|Diastolic blood pressure (mm Hg)|
-    |SkinThickness|Triceps skin fold thickness (mm)|
-    |Insulin|2-Hour serum insulin (mu U/ml)|
-    |BMI|Body mass index (weight in kg/(height in m)^2)|
-    |DiabetesPedigreeFunction|Diabetes pedigree function|
-    |Age|Age (years)|
+    |**Pregnancies**|Number of times pregnant|
+    |**Glucose**|Plasma glucose concentration for 2 hours in an oral glucose tolerance test|
+    |**BloodPressure**|Diastolic blood pressure (mm Hg)|
+    |**SkinThickness**|Triceps skin fold thickness (mm)|
+    |**Insulin**|2-Hour serum insulin (mu U/ml)|
+    |**BMI**|Body mass index (weight in kg/(height in m)^2)|
+    |**DiabetesPedigreeFunction**|Diabetes pedigree function|
+    |**Age**|Age (years)|
     """)
     
     st.write("""
@@ -279,13 +310,16 @@ elif radio == "Technical Report":
     st.image(model_3, use_column_width=True)
 
     st.write("""
-    ### Deep Learning Accuracy 
+    ## Deep Learning Metrics 
     **Maximum Accuracy**: 0.7858880758285522 \n
     **Maximum F1 Score**: 0.709932267665863 \n
     **Minimum Binary CrossEntropy Loss**: 0.08910478377791797 \n
     **Maximum Validation Accuracy**: 0.7961165308952332 \n
     **Maximum Validation F1 Score**: 0.7352941036224365 \n
     **Maximum Validation Binary CrossEntropy Loss**: 0.09106832598019572 \n
+    **Maximum Test Accuracy**: 0.6969 \n
+    **Maximum F1 Score**: 0.6435643564356436 \n
+    **Maximum Test Binary CrossEntropy loss**: 0.2129 \n
     """)
     accuracy_epoch = Image.open("accuracy-epoch.png")
     f1_epoch = Image.open("f1-epoch.png")
@@ -293,6 +327,25 @@ elif radio == "Technical Report":
     st.image(accuracy_epoch, caption="accuracy / epoch", use_column_width=True)
     st.image(f1_epoch, caption="f1 / epoch", use_column_width=True)
     st.image(loss_epoch, caption="loss / epoch", use_column_width=True)
+
+    st.write("""
+    ## Logistic Regression Metrics
+    **Maximum Test Accuracy**: 0.7086614173228346 \n
+    **Maximum F1 Score**: 0.6145833333333333  \n
+    """)
+
+    st.write("""
+    ## Support Vector Machine Metrics
+    **Maximum Test Accuracy**: 0.7125984251968503 \n
+    **Maximum F1 Score**: 0.6256410256410256  \n
+    """)
+    
+    st.write("""
+    ## Naive Bayes Metrics
+    **Maximum Test Accuracy**: 0.7362204724409449 \n
+    **Maximum F1 Score**: 0.6171428571428572 \n
+    """)
+    
 
 elif radio == "About":
     st.write("""
