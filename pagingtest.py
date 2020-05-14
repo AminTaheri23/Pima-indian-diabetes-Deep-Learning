@@ -1,4 +1,18 @@
 import streamlit as st
+import numpy as np # linear algebra
+import pandas as pd # data processing, CSV file I/O (e.g. pd.read_csv)
+import tensorflow as tf 
+import matplotlib.pyplot as plt
+import sklearn as sk
+from tensorflow import keras
+import tensorflow.keras.backend as K
+import seaborn as sns
+import warnings
+from sklearn.dummy import DummyClassifier
+
+warnings.simplefilter('ignore')
+sns.set(rc={'figure.figsize' : (10, 5)})
+sns.set_style("darkgrid", {'axes.grid' : True})
 
 st.title("Diabetes Prediction with Deep Learning")
 from PIL import Image
@@ -42,7 +56,7 @@ if radio == "Home":
     |BMI|Body mass index (weight in kg/(height in m)^2)|
     |DiabetesPedigreeFunction|Diabetes pedigree function|
     |Age|Age (years)|
-    |Outcome|Class variable (0 or 1) 268 of 768 are 1, the others are 0|
+
 
     """)
     st.sidebar.title("Write your Data here") 
@@ -65,7 +79,19 @@ elif radio == "Technical Report":
     the datasets consist of several medical predictor (independent) variables and one target (dependent)
      variable, Outcome. Independent variables include the number of pregnancies the patient has had,
       their BMI, insulin level, age, and so on. 
-      [link of data in kaggle](https://www.kaggle.com/uciml/pima-indians-diabetes-database)
+      [link of data in kaggle](https://www.kaggle.com/uciml/pima-indians-diabetes-database)""")
+
+    diabetes = pd.read_csv('diabetes.csv')
+
+    ##################Checkbox for peeking data 
+    option=0
+    if st.sidebar.checkbox('Peek a data record'): 
+        option = st.sidebar.number_input(
+        'Which date record do you like to see?', 1)
+        st.write(
+        f'*Data record Number: {option}*',
+        diabetes.iloc[[int(option)]])
+    st.write("""
 
     ### Columns
 
@@ -92,7 +118,17 @@ elif radio == "Technical Report":
     ## Who is Pima Indians
 
     "The Pima (or Akimel O'odham, also spelled Akimel O'Otham, or "River People," formerly known as Pima) is a group of Native Americans living in an area consisting of what is now central and southern Arizona. The majority of the surviving two bands of Akimel O'odham are based on two reservations: the Keli Akimel O'Otham of the Gila River Indian Community (GRIC) and the On'k Akimel O'odham of the Salt River Pima-Maricopa Indian Community (SRPMIC). Wikipedia
+    """)
 
+    st.write(""" ## Correlation Matrix """)
+    ########## correleation
+    corrMatrix = diabetes.corr()
+    sns.heatmap(corrMatrix, annot=True)
+    st.write("This is the Correlation Matrix of our data. as we can see there not much correlation between features")
+    st.pyplot()
+
+
+    st.write("""
     ## Model Performance
 
     To measure the performance of a model, we need several elements :
@@ -103,7 +139,6 @@ elif radio == "Technical Report":
     - True Negative (TN): Healthy, correctly identified as healthy
     - False Positive (FP): Healthy, incorrectly identified as diabetic
     - False Negative (FN): Diabetic, incorrectly identified as healthy
-
     ### Metrics
 
     - Accuracy : (TP +TN) / (TP + TN + FP +FN)
