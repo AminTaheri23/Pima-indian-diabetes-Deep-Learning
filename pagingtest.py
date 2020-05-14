@@ -29,7 +29,7 @@ sns.set_style("darkgrid", {'axes.grid' : True})
 
 st.title("Diabetes Prediction with Deep Learning")
 
-image = Image.open('pima.jpg')
+image = Image.open('img/pima.jpg')
 
 st.image(image,width=500, use_column_width=True, )
 
@@ -131,16 +131,16 @@ if radio == "Home":
 
     @st.cache(allow_output_mutation=True)
     def load_it():
-        model = keras.models.load_model("model2")
+        model = keras.models.load_model("saved_model/model2")
         model._make_predict_function()
 
-        lr_clf_file = 'lr_clf.sav'
+        lr_clf_file = 'saved_model/lr_clf.sav'
         lr_clf = joblib.load(lr_clf_file)
 
-        svm_clf_file = 'svm_clf.sav'
+        svm_clf_file = 'saved_model/svm_clf.sav'
         svm_clf = joblib.load(svm_clf_file)
 
-        gnb_clf_file = 'gnb_clf.sav'
+        gnb_clf_file = 'saved_model/gnb_clf.sav'
         gnb_clf = joblib.load(gnb_clf_file)
 
         return model, lr_clf, svm_clf, gnb_clf
@@ -312,9 +312,9 @@ elif radio == "Technical Report":
         
     """)
     st.write("""### Deep Learning Model Architecture""")
-    model_1 = Image.open("model1.png")
-    model_2 = Image.open("model2.png")
-    model_3 = Image.open("model3.png")
+    model_1 = Image.open("img/model1.png")
+    model_2 = Image.open("img/model2.png")
+    model_3 = Image.open("img/model3.png")
     st.image(model_1, use_column_width=True)
     st.image(model_2, use_column_width=True)
     st.image(model_3, use_column_width=True)
@@ -331,9 +331,9 @@ elif radio == "Technical Report":
     **Maximum F1 Score**: 0.6435643564356436 \n
     **Maximum Test Binary CrossEntropy loss**: 0.2129 \n
     """)
-    accuracy_epoch = Image.open("accuracy-epoch.png")
-    f1_epoch = Image.open("f1-epoch.png")
-    loss_epoch = Image.open("loss-epoch.png")
+    accuracy_epoch = Image.open("img/accuracy-epoch.png")
+    f1_epoch = Image.open("img/f1-epoch.png")
+    loss_epoch = Image.open("img/loss-epoch.png")
     st.image(accuracy_epoch, caption="accuracy / epoch", use_column_width=True)
     st.image(f1_epoch, caption="f1 / epoch", use_column_width=True)
     st.image(loss_epoch, caption="loss / epoch", use_column_width=True)
