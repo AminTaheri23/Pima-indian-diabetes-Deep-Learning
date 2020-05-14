@@ -18,6 +18,11 @@ from sklearn.dummy import DummyClassifier
 # - ⬜ lr tuner
 # - ✅ add normalizing 
 
+# Button adding 
+# button = st.button("Add a and b")
+#     if button:
+#         st.write(f"a+b=")
+
 warnings.simplefilter('ignore')
 sns.set(rc={'figure.figsize' : (10, 5)})
 sns.set_style("darkgrid", {'axes.grid' : True})
@@ -72,13 +77,13 @@ st.write('The current number is ', number)
 #     time.sleep(0.1)
 #     my_bar.progress(percent_complete*10 + 1)
 
-st.balloons()
 
 st.error("test")
 
 st.warning('This is a warning')
 st.info('This is a purely informational message')
 st.success('This is a success message!')
+
 def get_f1(y_true, y_pred): #taken from old keras source code
     true_positives = K.sum(K.round(K.clip(y_true * y_pred, 0, 1)))
     possible_positives = K.sum(K.round(K.clip(y_true, 0, 1)))
