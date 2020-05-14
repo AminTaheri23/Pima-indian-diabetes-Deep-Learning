@@ -9,13 +9,25 @@ import tensorflow.keras.backend as K
 import seaborn as sns
 import warnings
 from sklearn.dummy import DummyClassifier
+from PIL import Image
+
+def norm_a_data(data):
+    data[0] = (data[0] - 0)    / (17 - 0)
+    data[1] = (data[1] - 0)    / (199 - 0)
+    data[2] = (data[2] - 0)    / (122 - 0)
+    data[3] = (data[3] - 0)    / (99 - 0)
+    data[4] = (data[4] - 0)    / (846 - 0)
+    data[5] = (data[5] - 0)    / (67 - 0)
+    data[6] = (data[6] - 0.078) / (2 - 0.078)
+    data[7] = (data[7] - 21)    / (81 - 21)
+    return data[:]
 
 warnings.simplefilter('ignore')
 sns.set(rc={'figure.figsize' : (10, 5)})
 sns.set_style("darkgrid", {'axes.grid' : True})
 
 st.title("Diabetes Prediction with Deep Learning")
-from PIL import Image
+
 image = Image.open('pima.jpg')
 
 st.image(image,width=500, use_column_width=True, )
@@ -60,14 +72,28 @@ if radio == "Home":
 
     """)
     st.sidebar.title("Write your Data here") 
-    st.sidebar.number_input(label="Pregnancies",                min_value=0, max_value=40, value= 0 ,format= "%i")
-    st.sidebar.number_input(label="Glucose",                    min_value=0, max_value=400, value= 0 ,format= "%i")
-    st.sidebar.number_input(label="BloodPressure",              min_value=0, max_value=400, value= 0 ,format= "%i")
-    st.sidebar.number_input(label="SkinThickness",              min_value=0, max_value=400, value= 0 ,format= "%i")
-    st.sidebar.number_input(label="Insulin",                    min_value=0, max_value=1600, value= 0 ,format= "%i")
-    st.sidebar.number_input(label="BMI",                        min_value=0.0, max_value=100.0, value=1.0, format= "%f", step=1.0)
-    st.sidebar.number_input(label="DiabetesPedigreeFunction",   min_value=0.0, max_value=400.0, value=1.0, format= "%f", step=1.0)
-    st.sidebar.number_input(label="Age",                        min_value=0, max_value=150, value= 0 ,format= "%i")
+    patient=[]
+    patient.append(st.sidebar.number_input(label="Pregnancies",                min_value=0, max_value=40, value= 0 ,format= "%i"))
+    patient.append(st.sidebar.number_input(label="Glucose",                    min_value=0, max_value=400, value= 0 ,format= "%i"))
+    patient.append(st.sidebar.number_input(label="BloodPressure",              min_value=0, max_value=400, value= 0 ,format= "%i"))
+    patient.append(st.sidebar.number_input(label="SkinThickness",              min_value=0, max_value=400, value= 0 ,format= "%i"))
+    patient.append(st.sidebar.number_input(label="Insulin",                    min_value=0, max_value=1600, value= 0 ,format= "%i"))
+    patient.append(st.sidebar.number_input(label="BMI",                        min_value=0.0, max_value=100.0, value=1.0, format= "%f", step=1.0))
+    patient.append(st.sidebar.number_input(label="DiabetesPedigreeFunction",   min_value=0.0, max_value=400.0, value=1.0, format= "%f", step=1.0))
+    patient.append(st.sidebar.number_input(label="Age",                        min_value=0, max_value=150, value= 0 ,format= "%i"))
+    st.write(f"""
+    #### Your data is 
+    |Pregnancies| Glucose |  BloodPressure | SkinThickness | Insulin | BMI | Diabetes Pedigree Function | Age|
+    |-----------|---------|----------------|---------------|---------|-----|----------------------------|----|
+    |{patient[0]}| {patient[1]}| {patient[2]}| {patient[3]}| {patient[4]}|  {patient[5]} | {patient[6]}|{patient[7]}|
+     """)
+    
+    button = st.button("Predict")
+    if button:
+        my_data = norm_a_data(patient)
+        my_data=np.array(my_data)
+        my_data = my_data.reshape(8,1)
+        prediction = model2.predict(my_data.transpose())
 
 elif radio == "Technical Report":
     st.write("""
@@ -127,6 +153,11 @@ elif radio == "Technical Report":
     st.write("This is the Correlation Matrix of our data. as we can see there not much correlation between features")
     st.pyplot()
 
+    st.write(f"""
+    ## Data Informations:
+    """)
+    st.dataframe(diabetes.describe().T)
+
 
     st.write("""
     ## Model Performance
@@ -153,6 +184,29 @@ elif radio == "Technical Report":
     In **K-fold cross-validation**, the original sample is randomly partitioned into K equal sized subsamples. Of the k subsamples, a single subsample is retained as the validation data for testing the model, and the remaining K − 1 subsamples are used as training data. The cross-validation process is then repeated K times, with each of the k subsamples used exactly once as validation data. The k results can then be averaged to produce a single estimation. The advantage of this method over repeated random sub-sampling is that all observations are used for both training and validation, and each observation is used for validation exactly once.
         
     """)
+    st.write("""### Deep Learning Model Architecture""")
+    model1 = Image.open("model1.png")
+    model2 = Image.open("model2.png")
+    model3 = Image.open("model3.png")
+    st.image(model1, use_column_width=True)
+    st.image(model2, use_column_width=True)
+    st.image(model3, use_column_width=True)
+
+    st.write("""
+    ### Deep Learning Accuracy 
+    **Maximum Accuracy**: 0.7858880758285522 \n
+    **Maximum F1 Score**: 0.709932267665863 \n
+    **Minimum Binary CrossEntropy Loss**: 0.08910478377791797 \n
+    **Maximum Validation Accuracy**: 0.7961165308952332 \n
+    **Maximum Validation F1 Score**: 0.7352941036224365 \n
+    **Maximum Validation Binary CrossEntropy Loss**: 0.09106832598019572 \n
+    """)
+    accuracy_epoch = Image.open("accuracy-epoch.png")
+    f1_epoch = Image.open("f1-epoch.png")
+    loss_epoch = Image.open("loss-epoch.png")
+    st.image(accuracy_epoch, caption="accuracy / epoch", use_column_width=True)
+    st.image(f1_epoch, caption="f1 / epoch", use_column_width=True)
+    st.image(loss_epoch, caption="loss / epoch", use_column_width=True)
 
 elif radio == "About":
     st.write("""
