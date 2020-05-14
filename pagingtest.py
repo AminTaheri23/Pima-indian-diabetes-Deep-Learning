@@ -117,6 +117,9 @@ elif radio == "About":
 Diabetes prediction with deep MLP models webapp (StreamLit.io) + 
 [ipynb](https://github.com/AminTaheri23/Pima-indian-diabetes-Deep-Learning/blob/master/pima-diabetes-classification-deep-learning.ipynb)
 
+This app is maintained by **Amin Taheri**. You can learn more about me at
+[My personal Website](https://amintaheri23.github.io).
+
 ## Acknowledgments
 This project was developed under the supervision of Dr. Attarzadeh. 
 
@@ -124,12 +127,6 @@ This project was developed under the supervision of Dr. Attarzadeh.
 
 st.sidebar.title("Contribute")
 st.sidebar.info(
-    "This an open source project and you are very welcome to **contribute**"
+    "This an open source project and you are very welcome to **contribute** "
     "to the [source code](https://github.com/AminTaheri23/Pima-indian-diabetes-Deep-Learning)."
 )
-st.sidebar.title("About")
-st.sidebar.info(
-        """
-        This app is maintained by Amin Taheri. You can learn more about me at
-        [My personal Website](https://amintaheri23.github.io).
-""")
