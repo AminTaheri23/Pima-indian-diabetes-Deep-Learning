@@ -4,7 +4,7 @@ st.title("Diabetes Prediction with Deep Learning")
 from PIL import Image
 image = Image.open('pima.jpg')
 
-st.image(image)
+st.image(image,width=500, use_column_width=True, )
 
 st.sidebar.title("Diabetes Detection")
 st.sidebar.success("Dibetes prediction with power of Artificial Intelligence!")
@@ -45,6 +45,15 @@ if radio == "Home":
     |Outcome|Class variable (0 or 1) 268 of 768 are 1, the others are 0|
 
     """)
+    st.sidebar.title("Write your Data here") 
+    st.sidebar.number_input(label="Pregnancies",                min_value=0, max_value=40, value= 0 ,format= "%i")
+    st.sidebar.number_input(label="Glucose",                    min_value=0, max_value=400, value= 0 ,format= "%i")
+    st.sidebar.number_input(label="BloodPressure",              min_value=0, max_value=400, value= 0 ,format= "%i")
+    st.sidebar.number_input(label="SkinThickness",              min_value=0, max_value=400, value= 0 ,format= "%i")
+    st.sidebar.number_input(label="Insulin",                    min_value=0, max_value=1600, value= 0 ,format= "%i")
+    st.sidebar.number_input(label="BMI",                        min_value=0.0, max_value=100.0, value=1.0, format= "%f", step=1.0)
+    st.sidebar.number_input(label="DiabetesPedigreeFunction",   min_value=0.0, max_value=400.0, value=1.0, format= "%f", step=1.0)
+    st.sidebar.number_input(label="Age",                        min_value=0, max_value=150, value= 0 ,format= "%i")
 
 elif radio == "Technical Report":
     st.write("""
