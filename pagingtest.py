@@ -145,14 +145,18 @@ if radio == "Home":
 
         return model, lr_clf, svm_clf, gnb_clf
 
-    def pred_human_readable(pred):
+    def pred_human_readable(pred, balloons):
         if pred >= 0.5 :
-            st.error("Unfortunately, we are **" + str("{:.2f}".format(pred*100)) + "%** sure that you have diabetes")
+            st.error("Unfortunately, we are **" + str("{:.2f}".format(pred*100)) + "%** sure that you have diabetes\n")
+            return pred
         else:
             st.success(f"Hooray! we are **" + str("{:.2f}".format((1-pred)*100)) + "%** sure that you don't have diabetes")
-            st.balloons()
+            if balloons:
+                 st.balloons()
+            return pred
 
     if button:
+        vote=0
         model, lr_clf, svm_clf, gnb_clf = load_it()
         my_data = norm_a_data(patient)
         my_data=np.array(my_data)
@@ -161,24 +165,30 @@ if radio == "Home":
         st.write("**Model 1 Results (Deep Learning):** \n")
         pred = model.predict(my_data.transpose())
         pred = float(pred)
-        pred_human_readable(pred)
+        vote += pred_human_readable(pred,0)
 
         st.write("**Model 2 Results (Logistic Regression):** \n")
         pred = lr_clf.predict_proba(my_data.transpose())
         pred = float(pred[0][1])
-        pred_human_readable(pred)
+        vote += pred_human_readable(pred,0)
 
         st.write("**Model 3 Results (Support Vector Machine):** \n")
         pred = svm_clf.predict_proba(my_data.transpose())
         pred = float(pred[0][1])
-        pred_human_readable(pred)
+        vote += pred_human_readable(pred,0)
 
         st.write("**Model 4 Results (Naive Bayes):** \n")
         pred = gnb_clf.predict_proba(my_data.transpose())
         pred = float(pred[0][1])
-        pred_human_readable(pred)
+        vote += pred_human_readable(pred,0)
         
-
+        st.write("""
+        ## The final result is: 
+        **This result is based on Weighted Averages of 4 above models. If the probability is near 50 or 60 percent,
+         this means that the model is unsure of its decision.
+         Keep in mind that this result cannot replace a professional doctor's diagnosis. **
+         """)
+        pred_human_readable(vote/4,1)
 
     st.write("""
     ### Data Description
@@ -230,7 +240,7 @@ elif radio == "Technical Report":
     option=0
     if st.sidebar.checkbox('Peek a data record'): 
         option = st.sidebar.number_input(
-        'Which date record do you like to see?', 0)
+        label = 'Which date record do you like to see?', min_value= 0, max_value= 767, value=0)
         st.write(
         f'*Data record Number: {option}*',
         diabetes.iloc[[int(option)]])
