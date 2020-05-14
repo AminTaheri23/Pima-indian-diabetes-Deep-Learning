@@ -11,6 +11,17 @@ import warnings
 from sklearn.dummy import DummyClassifier
 from PIL import Image
 
+
+def get_f1(y_true, y_pred): #taken from old keras source code
+    true_positives = K.sum(K.round(K.clip(y_true * y_pred, 0, 1)))
+    possible_positives = K.sum(K.round(K.clip(y_true, 0, 1)))
+    predicted_positives = K.sum(K.round(K.clip(y_pred, 0, 1)))
+    precision = true_positives / (predicted_positives + K.epsilon())
+    recall = true_positives / (possible_positives + K.epsilon())
+    f1_val = 2*(precision*recall)/(precision+recall+K.epsilon())
+    return f1_val
+
+
 def norm_a_data(data):
     data[0] = (data[0] - 0)    / (17 - 0)
     data[1] = (data[1] - 0)    / (199 - 0)
@@ -33,7 +44,7 @@ image = Image.open('pima.jpg')
 st.image(image,width=500, use_column_width=True, )
 
 st.sidebar.title("Diabetes Detection")
-st.sidebar.success("Dibetes prediction with power of Artificial Intelligence!")
+st.sidebar.success("Dibetes Prediction with The power of **Artificial Intelligence**!")
 
 st.sidebar.title("Navigation") 
 radio = st.sidebar.radio(label="Pages", options=["Home", "Technical Report", "About"])
@@ -44,19 +55,103 @@ if radio == "Home":
     
     ## What is diabetes
 
-    According to the NIH, "Diabetes is a disease that occurs when your **blood glucose**, also called blood sugar, is **too high**. Blood **glucose** is your main source of energy and **comes from the food you eat**. **Insulin**, a hormone made from the pancreas, **helps glucose** from food get into your cells to be used for energy. Sometimes your body doesn’t make enough or any insulin or doesn’t use insulin well. Glucose then stays in your blood and doesn’t reach your cells.
-    Over time, **having too much glucose in your blood** can cause health problems. Although diabetes has no cure, you can take steps to manage your diabetes and stay healthy.
-    Sometimes people call diabetes “a touch of sugar” or “borderline diabetes.” These terms suggest that someone doesn’t really have diabetes or has a less serious case, but every case of diabetes is serious.
-    What are the different types of diabetes? The most common types of diabetes are type 1, type 2, and gestational diabetes.
+    According to the NIH, "Diabetes is a disease that occurs when your **blood glucose**,
+     also called blood sugar, is **too high**. Blood **glucose** is your main source of
+      energy and **comes from the food you eat**. **Insulin**, a hormone made from the pancreas,
+       **helps glucose** from food get into your cells to be used for energy. Sometimes your 
+       body doesn’t make enough or any insulin or doesn’t use insulin well. Glucose then stays 
+       in your blood and doesn’t reach your cells.
+    Over time, **having too much glucose in your blood** can cause health problems. """)
 
-    - Type 1 diabetes: If you have type 1 diabetes, your body does not make insulin. Your immune system attacks and destroys the cells in your pancreas that make insulin. Type 1 diabetes is usually diagnosed in children and young adults, although it can appear at any age. People with type 1 diabetes need to take insulin every day to stay alive.
+    st.sidebar.title("Write your Data here") 
+    patient=[]
+    patient.append(
+        st.sidebar.number_input(
+            label="Pregnancies",
+            min_value=0,
+            max_value=40,
+            value= 0 ,
+            format= "%i"
+            ))
+    patient.append(
+        st.sidebar.number_input(
+            label="Glucose",
+            min_value=0,
+            max_value=400, 
+            value= 0, 
+            format= "%i"
+            ))
+    patient.append(
+        st.sidebar.number_input(
+            label="BloodPressure",
+            min_value=0, 
+            max_value=400, 
+            value= 0 , 
+            format= "%i"))
+    patient.append(
+        st.sidebar.number_input(
+            label="SkinThickness",
+            min_value=0, 
+            max_value=400, 
+            value= 0 , 
+            format= "%i"))
+    patient.append(
+        st.sidebar.number_input(
+            label="Insulin",
+            min_value=0, 
+            max_value=1600, 
+            value= 0 ,
+            format= "%i"))
+    patient.append(
+        st.sidebar.number_input(
+            label="BMI",
+            min_value=0.0,
+            max_value=100.0,
+            value=1.0, 
+            format= "%f", 
+            step=1.0))
+    patient.append(
+        st.sidebar.number_input(
+            label="DiabetesPedigreeFunction",
+            min_value=0.0, 
+            max_value=400.0,
+            value=1.0,  
+            format= "%f", 
+            step=1.0))
+    patient.append(
+        st.sidebar.number_input(
+            label="Age",
+            min_value=0, 
+            max_value=150, 
+            value= 0 , 
+            format= "%i"))
 
-    - Type 2 diabetes: If you have type 2 diabetes, your body does not make or use insulin well. You can develop type 2 diabetes at any age, even during childhood. However, this type of diabetes occurs most often in middle-aged and older people. Type 2 is the most common type of diabetes.
+    st.write(f"""
+    ## Your data is 
+    **Please double check your data.**
 
-    Gestational diabetes Gestational diabetes develops in some women when they are pregnant. Most of the time, this type of diabetes goes away after the baby is born. However, if you’ve had gestational diabetes, you have a greater chance of developing type 2 diabetes later in life. Sometimes diabetes diagnosed during pregnancy is type 2 diabetes.
-    Other types of diabetes Less common types include monogenic diabetes, which is an inherited form of diabetes, and cystic fibrosis-related diabetes ."
+    |Pregnancies| Glucose |  BloodPressure | SkinThickness | Insulin | BMI | Diabetes Pedigree Function | Age|
+    |-----------|---------|----------------|---------------|---------|-----|----------------------------|----|
+    |{patient[0]}| {patient[1]}| {patient[2]}| {patient[3]}| {patient[4]}|  {patient[5]} | {patient[6]}|{patient[7]}|
+     \n """)
+    st.write("\n")
+    button = st.button("Predict")
+    if button:
+        model = keras.models.load_model("model2",)# custom_objects={'get_f1': get_f1})
+        my_data = norm_a_data(patient)
+        my_data=np.array(my_data)
+        my_data = my_data.reshape(8,1)
+        pred = model.predict(my_data.transpose())
+        pred = float(pred)
+        if pred >= 0.5 :
+            st.error("Unfortunately, we are **" + str("{:.2f}".format(pred*100)) + "%** sure that you have diabetes/")
+        else:
+            st.success(f"Hooray! we are **" + str("{:.2f}".format((1-pred)*100)) + "%** sure that you don't have diabetes")
+            st.balloons()
 
-    ### Columns
+
+    st.write("""
+    ### Data Description
 
     |Columns|Description|
     |-------|------------|
@@ -68,32 +163,24 @@ if radio == "Home":
     |BMI|Body mass index (weight in kg/(height in m)^2)|
     |DiabetesPedigreeFunction|Diabetes pedigree function|
     |Age|Age (years)|
-
-
     """)
-    st.sidebar.title("Write your Data here") 
-    patient=[]
-    patient.append(st.sidebar.number_input(label="Pregnancies",                min_value=0, max_value=40, value= 0 ,format= "%i"))
-    patient.append(st.sidebar.number_input(label="Glucose",                    min_value=0, max_value=400, value= 0 ,format= "%i"))
-    patient.append(st.sidebar.number_input(label="BloodPressure",              min_value=0, max_value=400, value= 0 ,format= "%i"))
-    patient.append(st.sidebar.number_input(label="SkinThickness",              min_value=0, max_value=400, value= 0 ,format= "%i"))
-    patient.append(st.sidebar.number_input(label="Insulin",                    min_value=0, max_value=1600, value= 0 ,format= "%i"))
-    patient.append(st.sidebar.number_input(label="BMI",                        min_value=0.0, max_value=100.0, value=1.0, format= "%f", step=1.0))
-    patient.append(st.sidebar.number_input(label="DiabetesPedigreeFunction",   min_value=0.0, max_value=400.0, value=1.0, format= "%f", step=1.0))
-    patient.append(st.sidebar.number_input(label="Age",                        min_value=0, max_value=150, value= 0 ,format= "%i"))
-    st.write(f"""
-    #### Your data is 
-    |Pregnancies| Glucose |  BloodPressure | SkinThickness | Insulin | BMI | Diabetes Pedigree Function | Age|
-    |-----------|---------|----------------|---------------|---------|-----|----------------------------|----|
-    |{patient[0]}| {patient[1]}| {patient[2]}| {patient[3]}| {patient[4]}|  {patient[5]} | {patient[6]}|{patient[7]}|
-     """)
     
-    button = st.button("Predict")
-    if button:
-        my_data = norm_a_data(patient)
-        my_data=np.array(my_data)
-        my_data = my_data.reshape(8,1)
-        prediction = model2.predict(my_data.transpose())
+    st.write("""
+
+    ## More on Diabetes
+
+    Although diabetes has no cure, you can take steps to manage your diabetes and stay healthy.
+    Sometimes people call diabetes “a touch of sugar” or “borderline diabetes.” These terms suggest that someone doesn’t really have diabetes or has a less serious case, but every case of diabetes is serious.
+    What are the different types of diabetes? The most common types of diabetes are type 1, type 2, and gestational diabetes.
+
+    - Type 1 diabetes: If you have type 1 diabetes, your body does not make insulin. Your immune system attacks and destroys the cells in your pancreas that make insulin. Type 1 diabetes is usually diagnosed in children and young adults, although it can appear at any age. People with type 1 diabetes need to take insulin every day to stay alive.
+
+    - Type 2 diabetes: If you have type 2 diabetes, your body does not make or use insulin well. You can develop type 2 diabetes at any age, even during childhood. However, this type of diabetes occurs most often in middle-aged and older people. Type 2 is the most common type of diabetes.
+
+    ### Gestational diabetes 
+    Gestational diabetes develops in some women when they are pregnant. Most of the time, this type of diabetes goes away after the baby is born. However, if you’ve had gestational diabetes, you have a greater chance of developing type 2 diabetes later in life. Sometimes diabetes diagnosed during pregnancy is type 2 diabetes.
+    Other types of diabetes Less common types include monogenic diabetes, which is an inherited form of diabetes, and cystic fibrosis-related diabetes.
+    """)
 
 elif radio == "Technical Report":
     st.write("""
@@ -113,7 +200,7 @@ elif radio == "Technical Report":
     option=0
     if st.sidebar.checkbox('Peek a data record'): 
         option = st.sidebar.number_input(
-        'Which date record do you like to see?', 1)
+        'Which date record do you like to see?', 0)
         st.write(
         f'*Data record Number: {option}*',
         diabetes.iloc[[int(option)]])
@@ -185,12 +272,12 @@ elif radio == "Technical Report":
         
     """)
     st.write("""### Deep Learning Model Architecture""")
-    model1 = Image.open("model1.png")
-    model2 = Image.open("model2.png")
-    model3 = Image.open("model3.png")
-    st.image(model1, use_column_width=True)
-    st.image(model2, use_column_width=True)
-    st.image(model3, use_column_width=True)
+    model_1 = Image.open("model1.png")
+    model_2 = Image.open("model2.png")
+    model_3 = Image.open("model3.png")
+    st.image(model_1, use_column_width=True)
+    st.image(model_2, use_column_width=True)
+    st.image(model_3, use_column_width=True)
 
     st.write("""
     ### Deep Learning Accuracy 
