@@ -5,7 +5,6 @@ import tensorflow as tf
 import matplotlib.pyplot as plt
 import sklearn as sk
 from tensorflow import keras
-import tensorflow.keras.backend as K
 import seaborn as sns
 import warnings
 from sklearn.dummy import DummyClassifier
@@ -126,8 +125,6 @@ if radio == "Home":
      \n """)
     st.write("\n")
     button = st.button("Predict")
-
-    import tensorflow.keras.backend as K
 
     @st.cache(allow_output_mutation=True)
     def load_it():
