@@ -1,10 +1,11 @@
 import streamlit as st
 import numpy as np # linear algebra
 import pandas as pd # data processing, CSV file I/O (e.g. pd.read_csv)
-import tensorflow as tf 
+# import tensorflow as tf 
 import matplotlib.pyplot as plt
 import sklearn as sk
-from tensorflow import keras
+# from tensorflow import keras
+import keras
 import seaborn as sns
 import warnings
 from sklearn.dummy import DummyClassifier
@@ -126,10 +127,11 @@ if radio == "Home":
     st.write("\n")
     button = st.button("Predict")
 
-    @st.cache(allow_output_mutation=True)
+    # @st.cache(allow_output_mutation=True)
     def load_it():
-        model = keras.models.load_model("saved_model/model2")
+        model = keras.models.load_model("model2")
         model._make_predict_function()
+        session = model.get_session()
 
         lr_clf_file = 'saved_model/lr_clf.sav'
         lr_clf = joblib.load(lr_clf_file)
@@ -140,7 +142,7 @@ if radio == "Home":
         gnb_clf_file = 'saved_model/gnb_clf.sav'
         gnb_clf = joblib.load(gnb_clf_file)
 
-        return model, lr_clf, svm_clf, gnb_clf
+        return model,session, lr_clf, svm_clf, gnb_clf
 
     def pred_human_readable(pred, balloons):
         if pred >= 0.5 :
@@ -154,7 +156,8 @@ if radio == "Home":
 
     if button:
         vote=0
-        model, lr_clf, svm_clf, gnb_clf = load_it()
+        model,session, lr_clf, svm_clf, gnb_clf = load_it()
+        model.set_session(session)
         my_data = norm_a_data(patient)
         my_data=np.array(my_data)
         my_data = my_data.reshape(8,1)
