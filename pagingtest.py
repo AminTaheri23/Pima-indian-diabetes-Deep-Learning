@@ -131,7 +131,7 @@ if radio == "Home":
     def load_it():
         model = keras.models.load_model("model2")
         model._make_predict_function()
-        session = model.get_session()
+        # session = model.get_session()
 
         lr_clf_file = 'saved_model/lr_clf.sav'
         lr_clf = joblib.load(lr_clf_file)
@@ -142,7 +142,7 @@ if radio == "Home":
         gnb_clf_file = 'saved_model/gnb_clf.sav'
         gnb_clf = joblib.load(gnb_clf_file)
 
-        return model,session, lr_clf, svm_clf, gnb_clf
+        return model, lr_clf, svm_clf, gnb_clf
 
     def pred_human_readable(pred, balloons):
         if pred >= 0.5 :
@@ -156,8 +156,8 @@ if radio == "Home":
 
     if button:
         vote=0
-        model,session, lr_clf, svm_clf, gnb_clf = load_it()
-        model.set_session(session)
+        model, lr_clf, svm_clf, gnb_clf = load_it()
+        # model.set_session(session)
         my_data = norm_a_data(patient)
         my_data=np.array(my_data)
         my_data = my_data.reshape(8,1)
