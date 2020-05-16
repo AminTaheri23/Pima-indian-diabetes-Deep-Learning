@@ -118,7 +118,8 @@ if radio == "Home":
 
     st.write(f"""
     ## Your data is 
-    **Please double check your data.**
+
+    **Please enter your data in the side bar and double check your data.**
 
     |Pregnancies| Glucose |  BloodPressure | SkinThickness | Insulin | BMI | Diabetes Pedigree Function | Age|
     |-----------|---------|----------------|---------------|---------|-----|----------------------------|----|
