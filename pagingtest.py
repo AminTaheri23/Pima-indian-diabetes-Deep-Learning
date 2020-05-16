@@ -62,7 +62,7 @@ if radio == "Home":
     patient = []
     patient.append(
         st.sidebar.number_input(
-            label="Pregnancies",
+            label="Number of Pregnancies",
             min_value=0,
             max_value=40,
             value=0,
@@ -78,14 +78,14 @@ if radio == "Home":
         ))
     patient.append(
         st.sidebar.number_input(
-            label="BloodPressure",
+            label="Blood Pressure",
             min_value=0,
             max_value=400,
             value=0,
             format="%i"))
     patient.append(
         st.sidebar.number_input(
-            label="SkinThickness",
+            label="Skin Thickness",
             min_value=0,
             max_value=400,
             value=0,
@@ -107,7 +107,7 @@ if radio == "Home":
             step=1.0))
     patient.append(
         st.sidebar.number_input(
-            label="DiabetesPedigreeFunction",
+            label="Diabetes Pedigree Function",
             min_value=0.0,
             max_value=400.0,
             value=1.0,
