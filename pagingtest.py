@@ -1,43 +1,48 @@
-import streamlit as st
-import numpy as np # linear algebra
-import pandas as pd # data processing, CSV file I/O (e.g. pd.read_csv)
-# import tensorflow as tf 
-import matplotlib.pyplot as plt
-import sklearn as sk
+import warnings
+
+import joblib
 # from tensorflow import keras
 import keras
+# import tensorflow as tf
+import matplotlib.pyplot as plt
+import numpy as np  # linear algebra
+import pandas as pd  # data processing, CSV file I/O (e.g. pd.read_csv)
 import seaborn as sns
-import warnings
-from sklearn.dummy import DummyClassifier
+import sklearn as sk
+import streamlit as st
 from PIL import Image
-import joblib
+from sklearn.dummy import DummyClassifier
+
 
 def norm_a_data(data):
-    data[0] = (data[0] - 0)    / (17 - 0)
-    data[1] = (data[1] - 0)    / (199 - 0)
-    data[2] = (data[2] - 0)    / (122 - 0)
-    data[3] = (data[3] - 0)    / (99 - 0)
-    data[4] = (data[4] - 0)    / (846 - 0)
-    data[5] = (data[5] - 0)    / (67 - 0)
+    data[0] = (data[0] - 0) / (17 - 0)
+    data[1] = (data[1] - 0) / (199 - 0)
+    data[2] = (data[2] - 0) / (122 - 0)
+    data[3] = (data[3] - 0) / (99 - 0)
+    data[4] = (data[4] - 0) / (846 - 0)
+    data[5] = (data[5] - 0) / (67 - 0)
     data[6] = (data[6] - 0.078) / (2 - 0.078)
-    data[7] = (data[7] - 21)    / (81 - 21)
+    data[7] = (data[7] - 21) / (81 - 21)
     return data[:]
 
+
 warnings.simplefilter('ignore')
-sns.set(rc={'figure.figsize' : (10, 5)})
-sns.set_style("darkgrid", {'axes.grid' : True})
+sns.set(rc={'figure.figsize': (10, 5)})
+sns.set_style("darkgrid", {'axes.grid': True})
 
 st.title("Diabetes Prediction with Deep Learning")
 
 image = Image.open('img/pima.jpg')
 
-st.image(image,width=500, use_column_width=True, )
+st.image(image, width=500, use_column_width=True, )
 
 st.sidebar.title("Diabetes Detection")
-st.sidebar.success("Dibetes Prediction with The power of **Artificial Intelligence**!")
+st.sidebar.success(
+    "Dibetes Prediction with The power of **Artificial Intelligence**!")
 
-st.sidebar.title("Navigation") 
-radio = st.sidebar.radio(label="Pages", options=["Home", "Technical Report", "About"])
+st.sidebar.title("Navigation")
+radio = st.sidebar.radio(label="Pages", options=[
+                         "Home", "Technical Report", "About"])
 if radio == "Home":
     st.write("""
     
@@ -53,68 +58,68 @@ if radio == "Home":
        in your blood and doesn’t reach your cells.
     Over time, **having too much glucose in your blood** can cause health problems. """)
 
-    st.sidebar.title("Write your Data here") 
-    patient=[]
+    st.sidebar.title("Write your Data here")
+    patient = []
     patient.append(
         st.sidebar.number_input(
             label="Pregnancies",
             min_value=0,
             max_value=40,
-            value= 0 ,
-            format= "%i"
-            ))
+            value=0,
+            format="%i"
+        ))
     patient.append(
         st.sidebar.number_input(
             label="Glucose",
             min_value=0,
-            max_value=400, 
-            value= 0, 
-            format= "%i"
-            ))
+            max_value=400,
+            value=0,
+            format="%i"
+        ))
     patient.append(
         st.sidebar.number_input(
             label="BloodPressure",
-            min_value=0, 
-            max_value=400, 
-            value= 0 , 
-            format= "%i"))
+            min_value=0,
+            max_value=400,
+            value=0,
+            format="%i"))
     patient.append(
         st.sidebar.number_input(
             label="SkinThickness",
-            min_value=0, 
-            max_value=400, 
-            value= 0 , 
-            format= "%i"))
+            min_value=0,
+            max_value=400,
+            value=0,
+            format="%i"))
     patient.append(
         st.sidebar.number_input(
             label="Insulin",
-            min_value=0, 
-            max_value=1600, 
-            value= 0 ,
-            format= "%i"))
+            min_value=0,
+            max_value=1600,
+            value=0,
+            format="%i"))
     patient.append(
         st.sidebar.number_input(
             label="BMI",
             min_value=0.0,
             max_value=100.0,
-            value=1.0, 
-            format= "%f", 
+            value=1.0,
+            format="%f",
             step=1.0))
     patient.append(
         st.sidebar.number_input(
             label="DiabetesPedigreeFunction",
-            min_value=0.0, 
+            min_value=0.0,
             max_value=400.0,
-            value=1.0,  
-            format= "%f", 
+            value=1.0,
+            format="%f",
             step=1.0))
     patient.append(
         st.sidebar.number_input(
             label="Age",
-            min_value=0, 
-            max_value=150, 
-            value= 0 , 
-            format= "%i"))
+            min_value=0,
+            max_value=150,
+            value=0,
+            format="%i"))
 
     st.write(f"""
     ## Your data is 
@@ -130,6 +135,14 @@ if radio == "Home":
 
     # @st.cache(allow_output_mutation=True)
     def load_it():
+        """load saved models from disk
+
+        Returns:
+            a tuple of (model, lr_clf, svm_clf, gnb_clf) -- where model is a keras model, 
+            lr_clf is a logistic regression classification scikit learn model
+            svm_clf is a support vector machine classification scikit learn model
+            gnb_clf is a Guassian naive bayse classification model
+        """        
         model = keras.models.load_model("model2")
         model._make_predict_function()
         # session = model.get_session()
@@ -146,50 +159,61 @@ if radio == "Home":
         return model, lr_clf, svm_clf, gnb_clf
 
     def pred_human_readable(pred, balloons):
-        if pred >= 0.5 :
-            st.error("Unfortunately, we are **" + str("{:.2f}".format(pred*100)) + "%** sure that you have diabetes\n")
+        """human readable prediction for with streamlit st.write
+
+        Arguments:
+            pred {float} -- prediction probablity of model
+            balloons {bool} -- whether to show balloons or not
+
+        Returns:
+            pred -- float for voting system
+        """        
+        if pred >= 0.5:
+            st.error("Unfortunately, we are **" +
+                     str("{:.2f}".format(pred*100)) + "%** sure that you have diabetes\n")
             return pred
         else:
-            st.success(f"Hooray! we are **" + str("{:.2f}".format((1-pred)*100)) + "%** sure that you don't have diabetes")
+            st.success(f"Hooray! we are **" + str("{:.2f}".format(
+                (1-pred)*100)) + "%** sure that you don't have diabetes")
             if balloons:
-                 st.balloons()
+                st.balloons()
             return pred
 
     if button:
-        vote=0
+        vote = 0
         model, lr_clf, svm_clf, gnb_clf = load_it()
         # model.set_session(session)
         my_data = norm_a_data(patient)
-        my_data=np.array(my_data)
-        my_data = my_data.reshape(8,1)
+        my_data = np.array(my_data)
+        my_data = my_data.reshape(8, 1)
 
         st.write("**Model 1 Results (Deep Learning):** \n")
         pred = model.predict(my_data.transpose())
         pred = float(pred)
-        vote += pred_human_readable(pred,0)
+        vote += pred_human_readable(pred, 0)
 
         st.write("**Model 2 Results (Logistic Regression):** \n")
         pred = lr_clf.predict_proba(my_data.transpose())
         pred = float(pred[0][1])
-        vote += pred_human_readable(pred,0)
+        vote += pred_human_readable(pred, 0)
 
         st.write("**Model 3 Results (Support Vector Machine):** \n")
         pred = svm_clf.predict_proba(my_data.transpose())
         pred = float(pred[0][1])
-        vote += pred_human_readable(pred,0)
+        vote += pred_human_readable(pred, 0)
 
         st.write("**Model 4 Results (Naive Bayes):** \n")
         pred = gnb_clf.predict_proba(my_data.transpose())
         pred = float(pred[0][1])
-        vote += pred_human_readable(pred,0)
-        
+        vote += pred_human_readable(pred, 0)
+
         st.write("""
         ## The final result is: 
         **This result is based on Weighted Averages of 4 above models. If the probability is near 50 or 60 percent,
          this means that the model is unsure of its decision.
          Keep in mind that this result cannot replace a professional doctor's diagnosis. **
          """)
-        pred_human_readable(vote/4,1)
+        pred_human_readable(vote/4, 1)
 
     st.write("""
     ### Data Description
@@ -205,7 +229,7 @@ if radio == "Home":
     |**DiabetesPedigreeFunction**|Diabetes pedigree function|
     |**Age**|Age (years)|
     """)
-    
+
     st.write("""
 
     ## More on Diabetes
@@ -237,14 +261,14 @@ elif radio == "Technical Report":
 
     diabetes = pd.read_csv('diabetes.csv')
 
-    ##################Checkbox for peeking data 
-    option=0
-    if st.sidebar.checkbox('Peek a data record'): 
+    # Checkbox for peeking data
+    option = 0
+    if st.sidebar.checkbox('Peek a data record'):
         option = st.sidebar.number_input(
-        label = 'Which date record do you like to see?', min_value= 0, max_value= 767, value=0)
+            label='Which date record do you like to see?', min_value=0, max_value=767, value=0)
         st.write(
-        f'*Data record Number: {option}*',
-        diabetes.iloc[[int(option)]])
+            f'*Data record Number: {option}*',
+            diabetes.iloc[[int(option)]])
     st.write("""
 
     ### Columns
@@ -275,7 +299,7 @@ elif radio == "Technical Report":
     """)
 
     st.write(""" ## Correlation Matrix """)
-    ########## correleation
+    # correleation
     corrMatrix = diabetes.corr()
     sns.heatmap(corrMatrix, annot=True)
     st.write("This is the Correlation Matrix of our data. as we can see there not much correlation between features")
@@ -285,7 +309,6 @@ elif radio == "Technical Report":
     ## Data Informations:
     """)
     st.dataframe(diabetes.describe().T)
-
 
     st.write("""
     ## Model Performance
@@ -339,6 +362,7 @@ elif radio == "Technical Report":
     st.image(f1_epoch, caption="f1 / epoch", use_column_width=True)
     st.image(loss_epoch, caption="loss / epoch", use_column_width=True)
 
+    #TODO I should write hyperparamters of ml algorithms. 
     st.write("""
     ## Logistic Regression Metrics
     **Maximum Test Accuracy**: 0.7086614173228346 \n
@@ -350,13 +374,13 @@ elif radio == "Technical Report":
     **Maximum Test Accuracy**: 0.7125984251968503 \n
     **Maximum F1 Score**: 0.6256410256410256  \n
     """)
-    
+
     st.write("""
     ## Naive Bayes Metrics
     **Maximum Test Accuracy**: 0.7362204724409449 \n
     **Maximum F1 Score**: 0.6171428571428572 \n
     """)
-    
+
 
 elif radio == "About":
     st.write("""
